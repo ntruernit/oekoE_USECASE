@@ -1,0 +1,647 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Odoo Mock Service",
+    "description": "Mock service simulating Odoo ERP and a payment gateway for the WatsonX Orchestrate Use Case 3 demo.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000",
+      "description": "Local development server"
+    }
+  ],
+  "paths": {
+    "/pdf/extract": {
+      "post": {
+        "tags": [
+          "PDF"
+        ],
+        "summary": "Extract payment data from a PDF disbursement letter",
+        "description": "Upload a German disbursement letter PDF.\nReturns all payment-relevant fields extracted from the document.\nThe PDF must contain labeled fields: Grundeigentümer, Betrag, IBAN, etc.",
+        "operationId": "extract_pdf_pdf_extract_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_extract_pdf_pdf_extract_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtractedData"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/odoo/entries": {
+      "post": {
+        "tags": [
+          "Odoo"
+        ],
+        "summary": "Create a draft disbursement entry",
+        "description": "Create a new disbursement entry in Odoo with status 'draft'.\nReturns the created entry including its generated ID.",
+        "operationId": "create_entry_odoo_entries_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEntryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisbursementEntry"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Odoo"
+        ],
+        "summary": "List disbursement entries",
+        "description": "Return all disbursement entries, optionally filtered by status.",
+        "operationId": "list_entries_odoo_entries_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by status: draft | approved | rejected | paid",
+              "title": "Status"
+            },
+            "description": "Filter by status: draft | approved | rejected | paid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DisbursementEntry"
+                  },
+                  "title": "Response List Entries Odoo Entries Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/odoo/entries/{entry_id}": {
+      "get": {
+        "tags": [
+          "Odoo"
+        ],
+        "summary": "Get a disbursement entry by ID",
+        "description": "Retrieve a single disbursement entry by its ID.",
+        "operationId": "get_entry_odoo_entries__entry_id__get",
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Entry Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisbursementEntry"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/odoo/entries/{entry_id}/approve": {
+      "post": {
+        "tags": [
+          "Odoo"
+        ],
+        "summary": "Approve a disbursement entry",
+        "description": "Approve a draft disbursement entry.\nOnly entries in 'draft' status can be approved.",
+        "operationId": "approve_entry_odoo_entries__entry_id__approve_post",
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Entry Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisbursementEntry"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/odoo/entries/{entry_id}/reject": {
+      "post": {
+        "tags": [
+          "Odoo"
+        ],
+        "summary": "Reject a disbursement entry",
+        "description": "Reject a draft disbursement entry and record the reason.\nOnly entries in 'draft' status can be rejected.",
+        "operationId": "reject_entry_odoo_entries__entry_id__reject_post",
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Entry Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisbursementEntry"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/initiate": {
+      "post": {
+        "tags": [
+          "Payments"
+        ],
+        "summary": "Initiate a bank transfer for an approved entry",
+        "description": "Initiate a bank transfer for an approved disbursement entry.\nEntry must have status 'approved'. On success, entry status is set to 'paid'.\nReturns a transaction ID and confirmation message.",
+        "operationId": "initiate_payment_payments_initiate_post",
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "ID of the approved disbursement entry",
+              "title": "Entry Id"
+            },
+            "description": "ID of the approved disbursement entry"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentConfirmation"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Body_extract_pdf_pdf_extract_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "description": "PDF disbursement letter"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_extract_pdf_pdf_extract_post"
+      },
+      "CreateEntryRequest": {
+        "properties": {
+          "landowner_name": {
+            "type": "string",
+            "title": "Landowner Name"
+          },
+          "landowner_address": {
+            "type": "string",
+            "title": "Landowner Address"
+          },
+          "contract_type": {
+            "type": "string",
+            "title": "Contract Type"
+          },
+          "amount": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "title": "Amount"
+          },
+          "iban": {
+            "type": "string",
+            "title": "Iban"
+          },
+          "bic": {
+            "type": "string",
+            "title": "Bic"
+          },
+          "reference_number": {
+            "type": "string",
+            "title": "Reference Number"
+          },
+          "due_date": {
+            "type": "string",
+            "title": "Due Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "landowner_name",
+          "landowner_address",
+          "contract_type",
+          "amount",
+          "iban",
+          "bic",
+          "reference_number",
+          "due_date"
+        ],
+        "title": "CreateEntryRequest"
+      },
+      "DisbursementEntry": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "landowner_name": {
+            "type": "string",
+            "title": "Landowner Name"
+          },
+          "landowner_address": {
+            "type": "string",
+            "title": "Landowner Address"
+          },
+          "contract_type": {
+            "type": "string",
+            "title": "Contract Type"
+          },
+          "amount": {
+            "type": "number",
+            "title": "Amount"
+          },
+          "iban": {
+            "type": "string",
+            "title": "Iban"
+          },
+          "bic": {
+            "type": "string",
+            "title": "Bic"
+          },
+          "reference_number": {
+            "type": "string",
+            "title": "Reference Number"
+          },
+          "due_date": {
+            "type": "string",
+            "title": "Due Date"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "draft | approved | rejected | paid"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "rejection_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rejection Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "landowner_name",
+          "landowner_address",
+          "contract_type",
+          "amount",
+          "iban",
+          "bic",
+          "reference_number",
+          "due_date",
+          "status",
+          "created_at"
+        ],
+        "title": "DisbursementEntry"
+      },
+      "ExtractedData": {
+        "properties": {
+          "landowner_name": {
+            "type": "string",
+            "title": "Landowner Name",
+            "description": "Full name of the landowner"
+          },
+          "landowner_address": {
+            "type": "string",
+            "title": "Landowner Address",
+            "description": "Full address of the landowner"
+          },
+          "contract_type": {
+            "type": "string",
+            "title": "Contract Type",
+            "description": "e.g. Leitungsrecht, Kabelrecht"
+          },
+          "amount": {
+            "type": "number",
+            "title": "Amount",
+            "description": "Payment amount in EUR"
+          },
+          "iban": {
+            "type": "string",
+            "title": "Iban",
+            "description": "Landowner IBAN (no spaces)"
+          },
+          "bic": {
+            "type": "string",
+            "title": "Bic",
+            "description": "Landowner bank BIC"
+          },
+          "reference_number": {
+            "type": "string",
+            "title": "Reference Number",
+            "description": "Internal reference number"
+          },
+          "due_date": {
+            "type": "string",
+            "title": "Due Date",
+            "description": "Payment due date (YYYY-MM-DD)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "landowner_name",
+          "landowner_address",
+          "contract_type",
+          "amount",
+          "iban",
+          "bic",
+          "reference_number",
+          "due_date"
+        ],
+        "title": "ExtractedData"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "PaymentConfirmation": {
+        "properties": {
+          "transaction_id": {
+            "type": "string",
+            "title": "Transaction Id"
+          },
+          "entry_id": {
+            "type": "string",
+            "title": "Entry Id"
+          },
+          "amount": {
+            "type": "number",
+            "title": "Amount"
+          },
+          "iban": {
+            "type": "string",
+            "title": "Iban"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "initiated_at": {
+            "type": "string",
+            "title": "Initiated At"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "transaction_id",
+          "entry_id",
+          "amount",
+          "iban",
+          "status",
+          "initiated_at",
+          "message"
+        ],
+        "title": "PaymentConfirmation"
+      },
+      "RejectRequest": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "description": "Reason for rejection"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "RejectRequest"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
