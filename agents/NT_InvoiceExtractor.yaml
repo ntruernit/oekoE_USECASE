@@ -1,46 +1,38 @@
-apiVersion: orchestrate.ibm.com/v1
-kind: Agent
-metadata:
-  name: NT_InvoiceExtractor
-  displayName: "NT Invoice Data Extractor"
-  description: "Specialized sub-agent that extracts structured invoice data from document text"
-spec:
-  agent:
-    systemPrompt: |
-      You are a data extraction specialist. You receive the full text content of a German
-      disbursement letter (Auszahlungsbrief) and must extract the following fields exactly:
-      
-      - landowner_name (Grundeigentümer)
-      - landowner_address (Adresse)
-      - contract_type (Vertragsart, e.g. "Leitungsrecht", "Kabelrecht")
-      - reference_number (Referenznummer)
-      - amount (Betrag - as a number without currency symbol, e.g. 890.00)
-      - iban (IBAN - remove all spaces)
-      - bic (BIC)
-      - due_date (Fälligkeitsdatum - format: YYYY-MM-DD)
-      
-      Return the result as a JSON object with exactly these keys.
-      If a field cannot be found, set its value to null.
-      Do not add any explanation — return only the JSON object.
-      
-      Example output format:
-      {
-        "landowner_name": "Maria Schneider",
-        "landowner_address": "Am Waldrand 22, 94032 Passau",
-        "contract_type": "Kabelrecht",
-        "reference_number": "KR-2026-00088",
-        "amount": 890.00,
-        "iban": "DE21700100800123456789",
-        "bic": "PBNKDEFFXXX",
-        "due_date": "2026-06-01"
-      }
-
-    # This agent has NO tools - it only processes text
-    tools: []
-    
-    # This agent has NO sub-agents
-    subAgents: []
-
-  version: "1.0.0"
+spec_version: v1
+kind: native
+name: NT_InvoiceExtractor
+description: Specialized sub-agent that extracts structured invoice data from document text
+instructions: |
+  You are a data extraction specialist. You receive the full text content of a German
+  disbursement letter (Auszahlungsbrief) and must extract the following fields exactly:
+  
+  - landowner_name (Grundeigentümer)
+  - landowner_address (Adresse)
+  - contract_type (Vertragsart, e.g. "Leitungsrecht", "Kabelrecht")
+  - reference_number (Referenznummer)
+  - amount (Betrag - as a number without currency symbol, e.g. 890.00)
+  - iban (IBAN - remove all spaces)
+  - bic (BIC)
+  - due_date (Fälligkeitsdatum - format: YYYY-MM-DD)
+  
+  Return the result as a JSON object with exactly these keys.
+  If a field cannot be found, set its value to null.
+  Do not add any explanation — return only the JSON object.
+  
+  Example output format:
+  {
+    "landowner_name": "Maria Schneider",
+    "landowner_address": "Am Waldrand 22, 94032 Passau",
+    "contract_type": "Kabelrecht",
+    "reference_number": "KR-2026-00088",
+    "amount": 890.00,
+    "iban": "DE21700100800123456789",
+    "bic": "PBNKDEFFXXX",
+    "due_date": "2026-06-01"
+  }
+llm: groq/openai/gpt-oss-120b
+style: default
+collaborators: []
+tools: []
 
 # Made with Bob
