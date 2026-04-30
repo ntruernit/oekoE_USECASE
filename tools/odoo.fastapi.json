@@ -7,53 +7,11 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8000",
-      "description": "Local development server"
+      "url": "https://application-59.29aicevdo9i9.us-east.codeengine.appdomain.cloud",
+      "description": "cloud engine"
     }
   ],
   "paths": {
-    "/pdf/extract": {
-      "post": {
-        "tags": [
-          "PDF"
-        ],
-        "summary": "Extract payment data from a PDF disbursement letter",
-        "description": "Upload a German disbursement letter PDF.\nReturns all payment-relevant fields extracted from the document.\nThe PDF must contain labeled fields: Grundeigentümer, Betrag, IBAN, etc.",
-        "operationId": "extract_pdf_pdf_extract_post",
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/Body_extract_pdf_pdf_extract_post"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ExtractedData"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/odoo/entries": {
       "post": {
         "tags": [

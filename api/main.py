@@ -153,10 +153,10 @@ def _parse_date(raw: str) -> str:
 # ─── Dashboard ───────────────────────────────────────────────────────────────
 
 DASHBOARD_HTML = """<!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Odoo Mock — Dashboard</title>
+<title>Auszahlungsverwaltung - ODOO</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -210,18 +210,18 @@ DASHBOARD_HTML = """<!DOCTYPE html>
 <header>
   <div class="pulse"></div>
   <div>
-    <h1>Odoo Mock — Disbursement Dashboard</h1>
-    <div class="sub">Auto-refreshing every 3s &nbsp;·&nbsp; Last update: <span id="ts">—</span></div>
+    <h1>Odoo Mock — Auszahlungs-Dashboard</h1>
+    <div class="sub">Automatische Aktualisierung alle 3s &nbsp;·&nbsp; Letzte Aktualisierung: <span id="ts">—</span></div>
   </div>
 </header>
 <main>
   <div class="card">
-    <div class="card-header">Disbursement Entries</div>
+    <div class="card-header">Auszahlungseinträge</div>
     <table>
       <thead>
         <tr>
-          <th>ID</th><th>Landowner</th><th>Contract</th>
-          <th>Amount</th><th>Due Date</th><th>Status</th>
+          <th>ID</th><th>Grundeigentümer</th><th>Vertrag</th>
+          <th>Betrag</th><th>Fälligkeitsdatum</th><th>Status</th>
         </tr>
       </thead>
       <tbody id="entries"></tbody>
@@ -229,11 +229,11 @@ DASHBOARD_HTML = """<!DOCTYPE html>
   </div>
 
   <div class="card">
-    <div class="card-header">Activity Log</div>
+    <div class="card-header">Aktivitätsprotokoll</div>
     <div class="log" id="log"></div>
   </div>
 </main>
-<footer>WatsonX Orchestrate Demo · Use Case 3</footer>
+<footer>WatsonX Orchestrate Demo</footer>
 
 <script>
 async function refresh() {
@@ -246,7 +246,7 @@ async function refresh() {
 
   const tbody = document.getElementById('entries');
   tbody.innerHTML = entries.length === 0
-    ? '<tr><td colspan="6" class="empty">No entries yet — waiting for the agent...</td></tr>'
+    ? '<tr><td colspan="6" class="empty">Noch keine Einträge — warte auf den Agenten...</td></tr>'
     : entries.slice().reverse().map(e => `
         <tr>
           <td><code>${e.id}</code></td>
@@ -259,7 +259,7 @@ async function refresh() {
 
   const logEl = document.getElementById('log');
   logEl.innerHTML = log.length === 0
-    ? '<div class="log-empty">No activity yet.</div>'
+    ? '<div class="log-empty">Noch keine Aktivität.</div>'
     : log.slice().reverse().map(l => `
         <div class="log-entry">
           <span class="log-time">${l.time}</span>
